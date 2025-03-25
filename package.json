@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.2",
+    "@jridgewell/sourcemap-codec": "^1.4.15",
     "@nuxt/eslint": "^0.7.6",
     "@nuxt/ui": "^2.21.0",
     "@nuxtjs/color-mode": "^3.5.2",
