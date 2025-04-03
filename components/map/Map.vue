@@ -13,12 +13,6 @@
       <div class="flex flex-col gap-2">
         <div class="font-medium">{{ selectedAddress || t('map.add_report_here') }}</div>
         <div class="flex gap-2">
-          <UButton size="sm" color="primary" @click="handleAddPhotoReport">
-            <template #leading>
-              <UIcon name="i-heroicons-camera" class="w-4 h-4" />
-            </template>
-            {{ t('report.buttons.photo') }}
-          </UButton>
           <UButton size="sm" @click="handleAddClassicReport">
             <template #leading>
               <UIcon name="i-heroicons-document-text" class="w-4 h-4" />
@@ -56,7 +50,7 @@ const emit = defineEmits<{
   'update:bounds': [bounds: BoundsType, isDetailView?: boolean]
   'select-report': [report: any]
   'map-init': [map: maplibregl.Map]
-  'add-report': [type: 'photo' | 'classic', location: { lat: number, lng: number, address?: string }]
+  'add-report': [type: 'classic', location: { lat: number, lng: number, address?: string }]
 }>()
 
 
@@ -292,18 +286,6 @@ const handleLocationSelect = (locationData: { lat: number; lng: number; address:
 defineExpose({ handleLocationSelect })
 
 
-const handleAddPhotoReport = () => {
-  if (!currentMarker.value) return
-
-  const location = {
-    lat: currentMarker.value.getLngLat().lat,
-    lng: currentMarker.value.getLngLat().lng,
-    address: selectedAddress.value
-  }
-  
-  emit('add-report', 'photo', location)
-  clearLocationState()
-}
 
 const handleAddClassicReport = () => {
   if (!currentMarker.value) return

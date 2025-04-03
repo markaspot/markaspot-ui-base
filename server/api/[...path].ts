@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const endpointType = getEndpointType(cleanPath);
 
   
-  checkRateLimit(ip, endpointType, event.method);
+  checkRateLimit(event, ip, endpointType, event.method);
 
   
   const config = useRuntimeConfig();

@@ -1,12 +1,13 @@
 config/clients/index.ts merge=ours
 config/clients/default.ts merge=ours
 config/tailwind/tailwind.config.ts merge=ours
-i18n/locales/default/en.ts merge=ours
 components/core/Logo.vue merge=ours
-assets/css/fonts.css merge=ours
-assets/client/default/css/fonts.css merge=ours
 components/map/ActionButtons.vue merge=ours merge.renormalize=true
+components/map/Map.vue merge=ours merge.renormalize=true
+components/report/ServiceRequestFormDialog.vue merge=ours merge.renormalize=true
+components/report/PhotoReportForm.vue merge=ours
+types/clientConfig.ts merge=ours
+pages/index.vue merge=ours merge.renormalize=true
 public/images/logo-light.svg merge=ours merge.renormalize=true
 public/images/logo-dark.svg merge=ours merge.renormalize=true
 public/images/favicon.svg merge=ours merge.renormalize=true
-Dockerfile merge=ours

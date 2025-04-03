@@ -1,4 +1,5 @@
 import { createError } from 'h3';
+import type { H3Event } from 'h3';
 
 
 export const rateLimits = {
@@ -16,20 +17,20 @@ export const rateTracker: Record<string, Record<string, number[]>> = {};
 
 setInterval(() => {
   const now = Date.now();
-  for (const ip in rateTracker) {
-    for (const endpointType in rateTracker[ip]) {
+  for (const identifier in rateTracker) {
+    for (const endpointType in rateTracker[identifier]) {
       
-      rateTracker[ip][endpointType] = rateTracker[ip][endpointType].filter(
+      rateTracker[identifier][endpointType] = rateTracker[identifier][endpointType].filter(
         timestamp => now - timestamp < rateLimits[endpointType]?.windowMs
       );
       
-      if (rateTracker[ip][endpointType].length === 0) {
-        delete rateTracker[ip][endpointType];
+      if (rateTracker[identifier][endpointType].length === 0) {
+        delete rateTracker[identifier][endpointType];
       }
     }
     
-    if (Object.keys(rateTracker[ip]).length === 0) {
-      delete rateTracker[ip];
+    if (Object.keys(rateTracker[identifier]).length === 0) {
+      delete rateTracker[identifier];
     }
   }
 }, 60000); 
@@ -65,7 +66,24 @@ export const getEndpointType = (path: string | string[]): string | null => {
   return null;
 };
 
-export const checkRateLimit = (ip: string, endpointType: string | null, method: string): void => {
+export const getRateLimitIdentifier = (event: H3Event, ip: string): string => {
+  
+  const csrfToken = event.node.req.headers['x-csrf-token'] as string || '';
+  
+  if (csrfToken) {
+    // If we have a CSRF token, use it with the IP for a more precise identifier
+    // This allows different users behind the same firewall/IP to have separate rate limits
+    return `${ip}:${csrfToken.substring(0, 8)}`;
+  }
+  
+  // Fall back to IP-only for unauthenticated requests
+  return ip;
+};
+
+/**
+ * Checks if a request exceeds the rate limit and throws an error if it does
+ */
+export const checkRateLimit = (event: H3Event, ip: string, endpointType: string | null, method: string): void => {
   if (endpointType === 'georeport' && method === 'POST') {
     throw createError({
       statusCode: 405,
@@ -76,28 +94,39 @@ export const checkRateLimit = (ip: string, endpointType: string | null, method: 
   if (!endpointType || !rateLimits[endpointType] || method === 'GET') {
     return;
   }
+  
+  
+  const identifier = getRateLimitIdentifier(event, ip);
 
   const now = Date.now();
-  if (!rateTracker[ip]) {
-    rateTracker[ip] = {};
+  if (!rateTracker[identifier]) {
+    rateTracker[identifier] = {};
   }
-  if (!rateTracker[ip][endpointType]) {
-    rateTracker[ip][endpointType] = [];
+  if (!rateTracker[identifier][endpointType]) {
+    rateTracker[identifier][endpointType] = [];
   }
 
   
-  rateTracker[ip][endpointType] = rateTracker[ip][endpointType].filter(
+  rateTracker[identifier][endpointType] = rateTracker[identifier][endpointType].filter(
     (timestamp) => now - timestamp < rateLimits[endpointType].windowMs
   );
 
-  if (rateTracker[ip][endpointType].length >= rateLimits[endpointType].max) {
-    const oldestRequest = Math.min(...rateTracker[ip][endpointType]);
+  if (rateTracker[identifier][endpointType].length >= rateLimits[endpointType].max) {
+    const oldestRequest = Math.min(...rateTracker[identifier][endpointType]);
     const resetTime = oldestRequest + rateLimits[endpointType].windowMs - now;
+    
+    
+    const hasToken = identifier.includes(':');
+    
     throw createError({
       statusCode: 429,
       message: `Rate limit exceeded for ${endpointType}. Please try again in ${Math.ceil(resetTime/1000)} seconds.`,
+      data: {
+        hasUserToken: hasToken,
+        resetTimeMs: resetTime
+      }
     });
   }
 
-  rateTracker[ip][endpointType].push(now);
+  rateTracker[identifier][endpointType].push(now);
 };

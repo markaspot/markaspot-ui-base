@@ -28,7 +28,6 @@ interface ClientConfig {
     fallbackLocale?: string
   }
   features: {
-    photoReporting: boolean
     statistics: boolean
     categories: string[]
     aiAnalysis?: boolean

@@ -26,7 +26,7 @@ onMounted(() => {
 })
 
 const props = defineProps<{
-  type: 'photo' | 'classic',
+  type: 'classic',
   mapCenter?: {
     lat: number
     lng: number
@@ -72,17 +72,11 @@ const resetForm = () => {
   currentRequestId.value = ''
 }
 
-const formTitle = computed(() =>
-  props.type === 'photo' ? t('report.title.photo') : t('report.title.classic')
-)
+const formTitle = computed(() => t('report.title.classic'))
 
-const iconColor = computed(() =>
-  props.type === 'photo' ? 'primary' : 'secondary'
-)
+const iconColor = computed(() => 'secondary')
 
-const iconName = computed(() =>
-  props.type === 'photo' ? 'i-heroicons-camera' : 'i-heroicons-document-text'
-)
+const iconName = computed(() => 'i-heroicons-document-text')
 </script>
 
 <template>
@@ -150,7 +144,6 @@ const iconName = computed(() =>
 
       <!-- Form Content -->
       <main class="h-[calc(100dvh-8rem)] sm:h-auto overflow-y-auto">
-        
         <ClassicReportForm
           :map-center="{
             lat: props.mapCenter?.lat,

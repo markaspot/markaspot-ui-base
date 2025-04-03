@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col h-full">
     <HeaderLogo @header-height-change="onHeaderHeightChange"/>
-    <div class="px-4 py-2 text-gray-800 dark:text-gray-100 border-b bg-primary-200 dark:bg-primary-900 flex-shrink-0">
+    <div class="px-4 py-2 text-gray-800 dark:text-gray-100 border-b bg-primary-200 dark:bg-primary-700 flex-shrink-0">
       <div role="tablist" aria-label="Content sections" class="flex justify-between items-center">
         <button
           v-for="tab in tabs"

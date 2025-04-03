@@ -1,8 +1,10 @@
-# ActionButtons.vue
 <template>
   <div class="relative z-40">
     <!-- Action Buttons -->
-    <div class="fixed right-4 top-4 flex flex-col gap-2 w-[280px]">
+    <div
+      class="fixed right-4 flex flex-col gap-2 w-[280px]"
+      :class="fullscreenWithIsland ? 'safe-area-top' : 'top-16'"
+    >
       <!-- Location Search -->
       <LocationSearch
         :map-instance="mapInstance"
@@ -11,7 +13,6 @@
         class="mb-2"
       />
 
-      
 
       <!-- Classic Report Button -->
       <button
@@ -174,20 +175,3 @@ const geolocate = () => {
   }
 }
 </script>
-
-<style scoped>
-.animate-fire-combined {
-  animation: fire-combined 3s infinite;
-}
-
-@keyframes fire-combined {
-  0%, 100% {
-    color: theme('colors.amber.600');
-    filter: brightness(1.2) saturate(1.5);
-  }
-  50% {
-    color: theme('colors.amber.500');
-    filter: brightness(1.4) saturate(1.8);
-  }
-}
-</style>

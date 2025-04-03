@@ -22,7 +22,7 @@ export const defaultConfig = {
       '512': '/images/mas-512x512.png'
     },
     colors: {
-      primary: 'endeavour',
+      primary: 'waikawa-gray',
       secondary: 'magenta',
       
       gray: 'slate',
@@ -53,7 +53,6 @@ export const defaultConfig = {
       }
     },
     voting: false,
-    photoReporting: true,
     statistics: true,
     feedback: true,
     categories: ["infrastructure", "environment", "safety"],

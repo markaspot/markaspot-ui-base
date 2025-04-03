@@ -23,6 +23,13 @@ export default {
     already_submitted: "You have already submitted feedback for this service request",
     missing_uuid: "Missing service ID"
   },
+  service_unavailable: {
+    title: "Service Temporarily Unavailable",
+    message: "We're unable to connect to our services right now. This issue is likely temporary.",
+    retry: "We're currently experiencing technical difficulties. Please try again in {seconds} seconds.",
+    auto_retry: "Retrying in {seconds} seconds...",
+    retry_now: "Retry Now"
+  },
   header: {
     logo_alt: "Logo",
     app_name: "Mark-a-Spot",
@@ -94,7 +101,7 @@ export default {
   report: {
     title: {
       photo: "Photo Report",
-      classic: "Report Issue",
+      classic: "Classic Report",
       submit: "Submit Report",
       edit: "Edit Report",
       view: "View Report",
@@ -167,9 +174,27 @@ export default {
         error: "Error submitting report",
       },
     },
+    ai: {
+      label: "AI",
+      powered: "AI-Powered",
+      analyzing: "AI is analyzing your photos...",
+      processing: {
+        analyzing: "Asking the AI...",
+        location: "Checking image metadata...",
+        location_found: "Location found:",
+        location_ai: "Finding location in image...",
+        location_complete: "Location identified",
+        category: "Identifying category...",
+        category_found: "Category identified:",
+        description: "Generating description...",
+        description_complete: "Description generated",
+        complete: "AI analysis complete",
+        error: "Error during AI analysis",
+      },
+    },
     buttons: {
       photo: "Photo Report",
-      classic: "Report an Issue",
+      classic: "Classic Report",
       follow: "Follow Report",
       following: "Following",
       share: "Share Report",
@@ -322,5 +347,13 @@ export default {
           "Click the home icon {icon} in the address bar.",
       },
     },
+  },
+  boundaries: {
+    loading: "Loading boundary data...",
+    error: "Unable to validate location boundaries. Please try again later.",
+    notLoaded: "Boundaries not loaded yet",
+    outsideNonStrict: "Note: Selected location is outside {locationName} boundaries.",
+    outsideStrict: "Selected location is outside {locationName} boundaries. Please select a location within the city limits.",
+    validationUnavailable: "Boundary validation unavailable. Your report will be accepted but may be reviewed."
   },
 };

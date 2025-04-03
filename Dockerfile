@@ -5,7 +5,7 @@ ARG BUILDTIME
 ARG VERSION
 ARG REVISION
 ARG CLIENT=default
-ARG USE_PROXY=true
+ARG USE_PROXY=false
 
 ENV CLIENT=${CLIENT} \
     NUXT_PUBLIC_APP_VERSION=${VERSION:-unset} \
@@ -17,18 +17,17 @@ WORKDIR /build
 
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --no-audit
+RUN npm ci --omit=dev --no-audit
 
 # Copy source files
 COPY . .
 
-# Setup locales directory structure for merged
-RUN mkdir -p i18n/locales/merged
-# Copy default en.ts to merged without any merging needed
-RUN cp i18n/locales/default/en.ts i18n/locales/merged/en.ts
+# Validate locales before build
+RUN ls -alR i18n/locales
 
-# Build Nuxt
-RUN npm run build
+# Build translations and Nuxt
+RUN node scripts/build.js && \
+    npm run build
 
 # SBOM Generation Stage
 FROM alpine:3.19 AS sbom

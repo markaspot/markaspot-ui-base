@@ -45,7 +45,7 @@ const props = defineProps<{
 const mainMapInstance = ref<maplibregl.Map | null>(null)
 const selectedReport = ref<any>(null)
 const showDialog = ref(false)
-const reportType = ref('classic')
+const reportType = ref<'classic'>('classic')
 const showInfo = ref(false)
 const selectedPage = ref<any>(null)
 const geolocatedCoords = ref<{lat: number, lng: number} | null>(null)
@@ -167,7 +167,7 @@ const toggleInfo = () => {
 }
 
 const handleLanguageToggle = () => {
-  console.warn('Language toggle is disabled in open source version')
+  console.warn('Language toggle is disabled in base edition')
 }
 </script>
 
