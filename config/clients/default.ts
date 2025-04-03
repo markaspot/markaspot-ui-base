@@ -1,13 +1,13 @@
 
 export const defaultConfig = {
   name: "Mark-a-Spot",
-  shortName: "default",
+  shortName: "base",
   domain: "mark-a-spot.org",
   apiEndpoint: "https://api.mark-a-spot.org",
   theme: {
-    logoLight: "./assets/clients/default/logo-light.svg",
-    logoDark: "./assets/clients/default/logo-dark.svg",
-    favicon: "./assets/clients/default/favicon.svg",
+    logoLight: "./assets/clients/base/logo-light.svg",
+    logoDark: "./assets/clients/base/logo-dark.svg",
+    favicon: "./assets/clients/base/favicon.svg",
     logoHeight: "100px", 
     ui: {
       headerHeight: "120px", 

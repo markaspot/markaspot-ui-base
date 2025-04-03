@@ -4,7 +4,7 @@ A Nuxt.js frontend application designed to use Mark-a-Spot as a backend for civi
 
 This repository serves as a starter application and example of how to build citizen reporting platforms using the Mark-a-Spot.
 
-## Release: v0.0.4
+## Release: v1.0.2
 
 ## Features
 
@@ -21,8 +21,8 @@ This contains a docker-compose file that runs the already built app as docker im
 ### Docker standalone
 
 ```bash
-docker pull markaspot/markaspot-ui-base:v0.0.4
-docker run -p 3000:3000 markaspot/markaspot-ui-base:v0.0.4
+docker pull markaspot/markaspot-ui-base:v1.0.2
+docker run -p 3000:3000 markaspot/markaspot-ui-base:v1.0.2
 ```
 
 ### Manual Setup
