@@ -49,13 +49,18 @@ export const useServiceRequest = () => {
   const uploadMedia = async (file: File, onProgress?: UploadProgressCallback) => {
     try {
       
+      const fileExtension = file.name.split('.').pop() || '';
+      const fileName = file.name.substring(0, file.name.lastIndexOf('.'));
+      const uniqueFileName = `${fileName}_${Date.now()}.${fileExtension}`;
+      
+      // First upload the file
       const fileResponse = await api.post(
         '/jsonapi/media/request_image/field_media_image',
         file,
         {
           headers: {
             'Content-Type': 'application/octet-stream',
-            'Content-Disposition': `file; filename="${encodeURIComponent(file.name)}"`,
+            'Content-Disposition': `file; filename="${encodeURIComponent(uniqueFileName)}"`,
             'Accept': 'application/vnd.api+json'
           },
           onUploadProgress: (progressEvent) => {
@@ -72,7 +77,7 @@ export const useServiceRequest = () => {
         data: {
           type: 'media--request_image',
           attributes: {
-            name: file.name,
+            name: uniqueFileName,
             status: true
           },
           relationships: {

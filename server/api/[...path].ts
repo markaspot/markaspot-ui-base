@@ -139,6 +139,35 @@ export default defineEventHandler(async (event) => {
         logRequest('About to fetch URL:', { url: baseUrl.href });
       }
       
+      
+      if (cleanPath.startsWith('jsonapi/')) {
+        
+        
+        
+        
+        let randomizedJsonApiPath = process.env.JSONAPI_RANDOM_PATH || config.private?.jsonapiRandomPath || 'jsonapi';
+        
+        
+        if (typeof randomizedJsonApiPath === 'string') {
+          randomizedJsonApiPath = randomizedJsonApiPath.replace(/^["'](.*)["']$/, '$1');
+        }
+        
+        
+        if (randomizedJsonApiPath !== 'jsonapi') {
+          
+          const originalPath = baseUrl.pathname;
+          
+          const newPath = originalPath.replace(/\/jsonapi\//, `/${randomizedJsonApiPath}/`);
+          
+          baseUrl.pathname = newPath;
+          
+          logRequest('Rewriting JSON API path:', { 
+            original: originalPath,
+            rewritten: newPath
+          });
+        }
+      }
+      
       response = await $fetch(baseUrl.href, {
         method: event.method,
         headers,

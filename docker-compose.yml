@@ -2,7 +2,7 @@ version: '3'
 
 services:
   frontend:
-    image: markaspot/markaspot-ui-base:v1.0.2
+    image: markaspot/markaspot-ui-base:v1.1.0
     ports:
       - "3000:3000"
     environment:

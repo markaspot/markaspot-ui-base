@@ -263,9 +263,17 @@ export function useMap(
 
 
 
+  
+  const setMapPitch = (pitch: number) => {
+    if (mapInstance && mapInstance.loaded()) {
+      mapInstance.setPitch(pitch);
+    }
+  };
+
   return {
     updateGeoJSONSource,
     initializeMarkerLayers,
-    toggleHeatmap
+    toggleHeatmap,
+    setMapPitch
   };
 }

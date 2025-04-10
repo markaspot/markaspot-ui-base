@@ -37,8 +37,77 @@ export const useApiClient = (options: ApiClientOptions = {}) => {
   const config = useRuntimeConfig()
   const csrfToken = ref<string | null>(null)
 
+  
+  const jsonApiBasePath = '/jsonapi'
+  
+  
+  
+  const ALLOWED_JSONAPI_RELATIVE_PATHS = [
+    '/media/request_image/field_media_image',
+    '/media/request_image',
+    '/node/service_request',
+    '/node/page',
+    '/taxonomy_term/service_category',
+    '/vote/updown',
+    '/taxonomy_term/status',
+    '/block_content/mas_custom',
+  ];
+  
+  
+  const ALLOWED_CUSTOM_API_PATHS = [
+    '/api/mark-a-spot-form-mode-settings/node/service_request/default',
+    '/api/mark-a-spot-settings',
+    '/api/vote-sum',
+  ];
+  
+  
+  const ALLOWED_JSONAPI_ENDPOINTS = ALLOWED_JSONAPI_RELATIVE_PATHS.map(
+    path => `${jsonApiBasePath}${path}`
+  );
+
+  
+  const validateJsonApiEndpoint = (endpoint: string) => {
+    
+    if (!endpoint.startsWith(jsonApiBasePath + '/')) {
+      return true;
+    }
+
+    
+    
+    const uuidPattern = /\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(\/.*)?$/;
+    
+    
+    if (endpoint.includes('/vote-sum/')) {
+      return true; 
+    }
+    
+    const basePath = endpoint.replace(uuidPattern, '');
+    
+    // Check if the base path is in our allowlist
+    const isAllowed = ALLOWED_JSONAPI_ENDPOINTS.some(allowed => {
+      return basePath === allowed || endpoint.startsWith(allowed + '/');
+    });
+
+    if (!isAllowed) {
+      console.error(`Blocked unauthorized JSON API access to: ${endpoint}`);
+    }
+    
+    return isAllowed;
+  };
+
   const buildUrl = (endpoint: string, params?: Record<string, string>) => {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+    
+    // Validate the endpoint - throw error for unauthorized JSON API access
+    if (!validateJsonApiEndpoint(cleanEndpoint)) {
+      throw new ApiError(403, 'Forbidden', { 
+        errors: [{ 
+          status: '403',
+          title: 'Access Denied',
+          detail: 'Unauthorized access to restricted JSON API endpoint'
+        }]
+      });
+    }
 
     const shouldUseProxy = process.client && config.public.useProxy === true
     let baseUrl = shouldUseProxy 

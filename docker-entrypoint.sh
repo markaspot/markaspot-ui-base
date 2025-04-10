@@ -6,12 +6,14 @@ export NUXT_PUBLIC_API_BASE="${NUXT_API_BASE:-http://api.default}"
 export NUXT_PUBLIC_API_TIMEOUT="${API_TIMEOUT:-30000}"
 export NUXT_PUBLIC_SITE_KEY="${SITE_KEY:-default}"
 export GEOREPORT_API_KEY="${GEOREPORT_API_KEY}"  # Just pass through as is
+export NUXT_PUBLIC_MAPBOX_KEY="${MAPBOX_API_KEY}" # Pass Mapbox key to public runtime config
 
 # Log the configuration for debugging
 echo "Starting with configuration:"
 echo "API Base: $NUXT_PUBLIC_API_BASE"
 echo "API Timeout: $NUXT_PUBLIC_API_TIMEOUT"
 echo "GeoReport API Key: ${GEOREPORT_API_KEY:+configured}"
+echo "Mapbox API Key: ${MAPBOX_API_KEY:+configured}"
 
 # Optional: Validate required variables
 if [ -z "$GEOREPORT_API_KEY" ]; then

@@ -27,7 +27,7 @@ export const useVoting = () => {
     }
 
     try {
-      const url = `/jsonapi/node/service_request?filter[request_id][value]=${requestId}`
+      const url = `/api/node/service_request?filter[request_id][value]=${requestId}`
       const response = await api.get(url)
       if (!response.data?.[0]?.id) {
         throw new Error('Node not found')
@@ -55,7 +55,7 @@ export const useVoting = () => {
         throw err
       }
 
-      await api.post('/jsonapi/vote/updown', {
+      await api.post('/api/vote/updown', {
         data: {
           type: 'vote--updown',
           attributes: {
@@ -91,7 +91,7 @@ export const useVoting = () => {
     try {
       const node = await getNodeByRequestId(requestId)
       
-      const response = await api.get(`/jsonapi/vote-sum/${node.uuid}`)
+      const response = await api.get(`/api/vote-sum/${node.uuid}`)
 
       const voteSumResponse: VoteSumResponse | undefined = response.data
       if (voteSumResponse) {

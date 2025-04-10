@@ -47,7 +47,7 @@ export const getEndpointType = (path: string | string[]): string | null => {
     return 'media';
   } else if (cleanPath.startsWith('georeport/')) {
     return 'georeport';
-  } else if (cleanPath.startsWith('jsonapi/vote')) {
+  } else if (cleanPath.startsWith('jsonapi/vote') || cleanPath.startsWith('api/vote-sum')) {
     return 'vote';
   } else if (cleanPath.startsWith('feedback/')) {
     return 'feedback';

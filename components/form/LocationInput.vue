@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const { settings } = useFormSettings()
 const { search, reverse } = useGeocoding()
+const { validateLocation, boundaryConfig } = useBoundaryValidator()
 
 const fieldId = computed(() => Math.random().toString(36).substring(2, 9))
 
@@ -32,6 +33,14 @@ interface GeocodingResult {
   };
 }
 
+
+interface EnhancedGeocodingResult extends GeocodingResult {
+  validationResult?: {
+    valid: boolean;
+    message: string;
+  };
+}
+
 const props = defineProps<{
   modelValue: LocationValue,
   mapCenter?: {
@@ -49,11 +58,13 @@ const emit = defineEmits<{
 
 
 const searchInput = ref('')
-const suggestions = ref<GeocodingResult[]>([])
+const suggestions = ref<EnhancedGeocodingResult[]>([])
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const selected = ref(false)
 const gettingCurrentLocation = ref(false)
+const validationMessage = ref<string>('')
+const isLocationValid = ref<boolean>(true)
 
 const formatAddress = (address: GeocodingResult['address']): string => {
   const parts = []
@@ -114,7 +125,13 @@ const searchLocation = useDebounceFn(async (query: string) => {
     }
 
     const results = await search(query, searchOptions)
-    suggestions.value = results
+    
+    
+    suggestions.value = results.map(result => {
+      
+      const validationResult = validateLocation(result.lat, result.lng)
+      return { ...result, validationResult }
+    })
   } catch (error) {
     console.error('Error during location search:', error)
     error.value = t('report.form.location.error')
@@ -150,11 +167,23 @@ const getCurrentLocation = async () => {
         searchInput.value = formatAddress(result.address)
         selected.value = true
         
+        
+        const validationResult = validateLocation(latitude, longitude)
+        validationMessage.value = validationResult.message
+        isLocationValid.value = validationResult.valid
+        
+        
         emit('update:modelValue', { lat: latitude, lng: longitude })
       } catch (error) {
         console.error('Error during reverse geocoding:', error)
         searchInput.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
         selected.value = true
+        
+        
+        const validationResult = validateLocation(latitude, longitude)
+        validationMessage.value = validationResult.message
+        isLocationValid.value = validationResult.valid
+        
         emit('update:modelValue', { lat: latitude, lng: longitude })
       }
     }
@@ -179,11 +208,25 @@ const clearSearch = () => {
   selected.value = false
   suggestions.value = []
   error.value = null
+  validationMessage.value = ''
+  isLocationValid.value = true
 }
 
-const selectSuggestion = (suggestion: GeocodingResult) => {
+const selectSuggestion = (suggestion: EnhancedGeocodingResult) => {
   selected.value = true
   searchInput.value = formatAddress(suggestion.address)
+  
+  // Store validation information from the suggestion
+  if (suggestion.validationResult) {
+    validationMessage.value = suggestion.validationResult.message
+    isLocationValid.value = suggestion.validationResult.valid
+  } else {
+    // If for some reason we don't have validation results, validate now
+    const validationResult = validateLocation(suggestion.lat, suggestion.lng)
+    validationMessage.value = validationResult.message
+    isLocationValid.value = validationResult.valid
+  }
+  
   emit('update:modelValue', {
     lat: suggestion.lat,
     lng: suggestion.lng,
@@ -194,6 +237,8 @@ const selectSuggestion = (suggestion: GeocodingResult) => {
 const clearLocation = () => {
   emit('update:modelValue', { lat: '', lng: '' })
   clearSearch()
+  validationMessage.value = ''
+  isLocationValid.value = true
 }
 
 // Watch for modelValue changes to handle reverse geocoding
@@ -209,9 +254,19 @@ watch(() => props.modelValue, async (newValue) => {
     try {
       const result = await reverse(Number(newValue.lat), Number(newValue.lng));
       searchInput.value = formatAddress(result.address);
+      
+      // Validate the location coordinates
+      const validationResult = validateLocation(Number(newValue.lat), Number(newValue.lng));
+      validationMessage.value = validationResult.message;
+      isLocationValid.value = validationResult.valid;
     } catch (error) {
       console.error('Error during reverse geocoding:', error);
       // Don't try to format invalid coordinates
+      
+      
+      const validationResult = validateLocation(Number(newValue.lat), Number(newValue.lng));
+      validationMessage.value = validationResult.message;
+      isLocationValid.value = validationResult.valid;
     } finally {
       isLoading.value = false;
     }
@@ -231,6 +286,12 @@ onMounted(async () => {
     if (props.mapCenter.address) {
       searchInput.value = props.mapCenter.address
       selected.value = true
+      
+      
+      const validationResult = validateLocation(props.mapCenter.lat, props.mapCenter.lng)
+      validationMessage.value = validationResult.message
+      isLocationValid.value = validationResult.valid
+      
       emit('update:modelValue', {
         lat: props.mapCenter.lat,
         lng: props.mapCenter.lng
@@ -249,12 +310,23 @@ onMounted(async () => {
         const result = await reverse(props.mapCenter.lat, props.mapCenter.lng)
         searchInput.value = formatAddress(result.address)
         selected.value = true
+        
+        
+        const validationResult = validateLocation(props.mapCenter.lat, props.mapCenter.lng)
+        validationMessage.value = validationResult.message
+        isLocationValid.value = validationResult.valid
+        
         emit('update:modelValue', {
           lat: props.mapCenter.lat,
           lng: props.mapCenter.lng
         })
       } catch (error) {
         console.error('Error during reverse geocoding:', error)
+        
+        
+        const validationResult = validateLocation(props.mapCenter.lat, props.mapCenter.lng)
+        validationMessage.value = validationResult.message
+        isLocationValid.value = validationResult.valid
       } finally {
         isLoading.value = false
       }
@@ -330,8 +402,11 @@ onMounted(async () => {
           >
             <template #leading>
               <UIcon
-                name="i-heroicons-map-pin"
-                class="w-5 h-5 text-gray-400"
+                :name="suggestion.validationResult?.valid ? 'i-heroicons-map-pin' : 'i-heroicons-exclamation-triangle'"
+                :class="[
+                  'w-5 h-5',
+                  suggestion.validationResult?.valid ? 'text-gray-400' : 'text-amber-500'
+                ]"
                 aria-hidden="true"
               />
             </template>
@@ -341,6 +416,16 @@ onMounted(async () => {
               </span>
               <span class="text-sm text-gray-500 dark:text-gray-400">
                 {{ formatAddress(suggestion.address) }}
+              </span>
+              <!-- Show validation message if location is outside boundaries -->
+              <span 
+                v-if="suggestion.validationResult?.message" 
+                class="text-xs mt-1 p-1 rounded"
+                :class="[
+                  suggestion.validationResult.valid ? 'text-amber-600 bg-amber-50 dark:bg-amber-900 dark:text-amber-200' : 'text-red-600 bg-red-50 dark:bg-red-900 dark:text-red-200'
+                ]"
+              >
+                {{ suggestion.validationResult.message }}
               </span>
             </div>
           </UButton>
@@ -370,23 +455,41 @@ onMounted(async () => {
         <!-- Location Status -->
         <template #help>
           <div v-if="modelValue.lat && modelValue.lng"
-               class="flex items-center gap-2 text-sm text-gray-500"
+               class="flex flex-col gap-1 text-sm"
                aria-live="polite">
-            <UIcon
-              name="i-heroicons-check-circle"
-              class="w-4 h-4 text-green-500"
-              aria-hidden="true"
-            />
-            <span>{{ t('report.form.location.selected') }}</span>
-            <UButton
-              size="xs"
-              color="gray"
-              variant="ghost"
-              @click="clearLocation"
-              aria-label="Clear selected location"
+            <div class="flex items-center gap-2">
+              <UIcon
+                :name="isLocationValid ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
+                class="w-4 h-4"
+                :class="isLocationValid ? 'text-green-500' : 'text-amber-500'"
+                aria-hidden="true"
+              />
+              <span :class="isLocationValid ? 'text-gray-500' : 'text-amber-600'">
+                {{ t('report.form.location.selected') }}
+              </span>
+              <UButton
+                size="xs"
+                color="gray"
+                variant="ghost"
+                @click="clearLocation"
+                aria-label="Clear selected location"
+              >
+                {{ t('common.clear') }}
+              </UButton>
+            </div>
+            
+            <!-- Boundary validation message -->
+            <div 
+              v-if="validationMessage" 
+              class="ml-6 text-xs p-1 rounded"
+              :class="[
+                isLocationValid 
+                  ? 'text-amber-600 bg-amber-50 dark:bg-amber-900 dark:text-amber-200' 
+                  : 'text-red-600 bg-red-50 dark:bg-red-900 dark:text-red-200'
+              ]"
             >
-              {{ t('common.clear') }}
-            </UButton>
+              {{ validationMessage }}
+            </div>
           </div>
         </template>
         

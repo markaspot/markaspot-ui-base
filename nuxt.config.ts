@@ -54,6 +54,23 @@ export default defineNuxtConfig({
         const faviconSrc = resolve(__dirname, clientConfig.theme.favicon);
         const faviconTarget = resolve("public", "favicon.svg");
         copyFileSync(faviconSrc, faviconTarget);
+        
+        
+        if (clientConfig.theme.icons) {
+          
+          if (clientConfig.theme.icons['192']) {
+            const icon192Src = resolve(__dirname, clientConfig.theme.icons['192']);
+            const icon192Target = resolve(targetDir, "pwa-icon-192.png");
+            copyFileSync(icon192Src, icon192Target);
+          }
+          
+          
+          if (clientConfig.theme.icons['512']) {
+            const icon512Src = resolve(__dirname, clientConfig.theme.icons['512']);
+            const icon512Target = resolve(targetDir, "pwa-icon-512.png");
+            copyFileSync(icon512Src, icon512Target);
+          }
+        }
 
         
       } catch (error) {
@@ -171,21 +188,32 @@ export default defineNuxtConfig({
         },
       ],
       icons: [
+        
         {
-          src:
-            clientConfig.theme?.icons?.["192"] ||
-            "/web-app-manifest-192x192.png",
+          src: "/images/pwa-icon-192.png",
           sizes: "192x192",
           type: "image/png",
+          purpose: "any"
         },
         {
-          src:
-            clientConfig.theme?.icons?.["512"] ||
-            "/web-app-manifest-512x512.png",
+          src: "/images/pwa-icon-512.png", 
           sizes: "512x512",
           type: "image/png",
-          purpose: "any maskable",
+          purpose: "any"
         },
+        
+        {
+          src: "/images/pwa-icon-192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "maskable"
+        },
+        {
+          src: "/images/pwa-icon-512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "maskable"
+        }
       ],
       categories: ["productivity", "utilities", "tools"], 
       dir: "ltr", 
@@ -279,6 +307,7 @@ export default defineNuxtConfig({
     },
     private: {
       geoReportApiKey: process.env.GEOREPORT_API_KEY,
+      jsonapiRandomPath: process.env.JSONAPI_RANDOM_PATH || 'jsonapi'
     }
   },
   routeRules: {

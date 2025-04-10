@@ -69,7 +69,7 @@ export const useMarkASpotSettings = () => {
         error.value = null;
 
         try {
-            const response = await api.get<DrupalMarkASpotSettings>('/jsonapi/mark-a-spot-settings'); 
+            const response = await api.get<DrupalMarkASpotSettings>('/api/mark-a-spot-settings'); 
             if (response && typeof response === 'object') {
                 settings.value = response;
                 saveSettingsToCache(response); 

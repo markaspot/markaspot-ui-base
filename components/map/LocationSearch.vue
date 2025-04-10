@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import type { Map } from 'maplibre-gl'
-import { useFormSettings } from '~/composables/form/useFormSettings'
+import type { GeocodingResult } from '~/plugins/geocoding/types'
 
 const { t } = useI18n()
 const { settings } = useFormSettings()
 const { search, reverse } = useGeocoding()
+const { validateLocation, boundaryConfig } = useBoundaryValidator()
 
 const config = computed(() => settings.value?.fields.field_geolocation)
 
-interface GeocodingResult {
-  lat: number;
-  lng: number;
-  displayName: string;
-  address: {
-    street?: string;
-    houseNumber?: string;
-    postcode?: string;
-    city?: string;
-    state?: string;
-    country?: string;
+
+interface EnhancedGeocodingResult extends GeocodingResult {
+  validationResult?: {
+    valid: boolean;
+    message: string;
   };
 }
 
@@ -30,14 +23,14 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'location-selected': [coords: { lat: number; lng: number; address: string }]
+  'location-selected': [coords: { lat: number; lng: number; address: string; validationResult?: { valid: boolean; message: string } }]
 }>()
 
 
 const searchValue = ref('')
 const searchInput = ref('')
 const error = ref<string | null>(null)
-const suggestions = ref<GeocodingResult[]>([])
+const suggestions = ref<EnhancedGeocodingResult[]>([])
 const isLoading = ref(false)
 const isDropdownOpen = ref(false)
 let searchTimeout: NodeJS.Timeout | null = null
@@ -45,7 +38,6 @@ let searchTimeout: NodeJS.Timeout | null = null
 // Format address from result
 const formatAddress = (address: GeocodingResult['address']) => {
   const parts = []
-
   if (address.street) {
     const street = [address.street]
     if (address.houseNumber) {
@@ -53,7 +45,6 @@ const formatAddress = (address: GeocodingResult['address']) => {
     }
     parts.push(street.join(' '))
   }
-
   if (address.city) {
     const cityParts = []
     if (address.postcode) {
@@ -62,21 +53,19 @@ const formatAddress = (address: GeocodingResult['address']) => {
     cityParts.push(address.city)
     parts.push(cityParts.join(' '))
   }
-
   if (parts.length === 0 && address.state) {
     parts.push(address.state)
   }
-
   return parts.join(', ') || 'Unknown location'
 }
 
 
 const searchLocations = async (query: string) => {
   if (!query?.trim()) return
-
+  
   isLoading.value = true
   error.value = null
-
+  
   try {
     const results = await search(query, {
       limit: 5,
@@ -87,9 +76,14 @@ const searchLocations = async (query: string) => {
         lng: config.value.widget_settings.center_lng
       } : undefined
     })
-
-    suggestions.value = results
-  } catch (err) {
+    
+    
+    suggestions.value = results.map(result => {
+      
+      const validationResult = validateLocation(result.lat, result.lng)
+      return { ...result, validationResult }
+    })
+  } catch (err: any) {
     console.error('Search error:', err)
     error.value = t('errors.search_failed')
     suggestions.value = []
@@ -116,24 +110,26 @@ const clearSearch = () => {
   isDropdownOpen.value = false
 }
 
-const selectSuggestion = (suggestion: GeocodingResult) => {
+const selectSuggestion = (suggestion: EnhancedGeocodingResult) => {
   const address = formatAddress(suggestion.address)
   searchValue.value = address
-
+  
   if (props.mapInstance) {
     props.mapInstance.flyTo({
       center: [suggestion.lng, suggestion.lat],
       zoom: 16,
       duration: 1000
     })
-
+    
+    // Pass validation result along with the location data
     emit('location-selected', {
       lat: suggestion.lat,
       lng: suggestion.lng,
-      address
+      address,
+      validationResult: suggestion.validationResult
     })
   }
-
+  
   suggestions.value = []
   isDropdownOpen.value = false
 }
@@ -168,7 +164,7 @@ onUnmounted(() => {
           />
         </template>
       </UInput>
-
+      
       <!-- Suggestions Dropdown -->
       <div
         v-if="suggestions.length > 0 && isDropdownOpen"
@@ -181,13 +177,30 @@ onUnmounted(() => {
           @click="selectSuggestion(suggestion)"
         >
           <div class="flex items-start gap-2">
-            <UIcon name="i-heroicons-map-pin" class="w-5 h-5 text-gray-400 mt-0.5" />
+            <UIcon 
+              :name="suggestion.validationResult?.valid ? 'i-heroicons-map-pin' : 'i-heroicons-exclamation-triangle'" 
+              :class="[
+                'w-5 h-5 mt-0.5', 
+                suggestion.validationResult?.valid ? 'text-gray-400' : 'text-amber-500'
+              ]" 
+            />
             <div>
               <div class="font-medium text-gray-900 dark:text-gray-100">
                 {{ suggestion.displayName }}
               </div>
               <div class="text-sm text-gray-500 dark:text-gray-400">
                 {{ formatAddress(suggestion.address) }}
+              </div>
+              <!-- Show validation message if location is outside boundaries -->
+              <div 
+                v-if="suggestion.validationResult?.message" 
+                class="text-xs mt-1 p-1"
+                :class="[
+                  suggestion.validationResult.valid ? 'text-amber-600 bg-amber-50 dark:bg-amber-900 dark:text-amber-200' : 'text-red-600 bg-red-50 dark:bg-red-900 dark:text-red-200',
+                  'rounded'
+                ]"
+              >
+                {{ suggestion.validationResult.message }}
               </div>
             </div>
           </div>
@@ -202,9 +215,11 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
 }
+
 .location-search :deep(.pointer-events-none) {
   pointer-events: auto;
 }
+
 .clear-button {
   z-index: 20;
   pointer-events: auto;

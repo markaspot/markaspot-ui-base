@@ -3,6 +3,7 @@ import clientConfig from './config/clients'
 
 
 
+
 if (!clientConfig) {
   throw new Error('No client configuration found')
 }
@@ -12,5 +13,8 @@ export default defineAppConfig({
     secondary: clientConfig.theme.colors?.secondary,
     gray: clientConfig.theme.colors?.gray,
     icons: 'heroicons',
+  },
+  features: {
+    boundaries: clientConfig.features?.boundaries
   }
 })
