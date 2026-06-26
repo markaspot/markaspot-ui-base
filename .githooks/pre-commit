@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Pre-commit hook for dev/frontend.
+# Skip with: git commit --no-verify
+#
+
+set -e
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# Host node_modules can't resolve Nuxt-only deps (e.g. h3 in the fastmap-layer
+# server middleware), so run the gates inside node-dev when DDEV is up; fall
+# back to the host otherwise. Mirrors .githooks/pre-push.
+DDEV_AVAILABLE=false
+if command -v ddev >/dev/null 2>&1 && ddev describe >/dev/null 2>&1; then
+    DDEV_AVAILABLE=true
+fi
+
+echo "=== Pre-commit: TypeScript typecheck ==="
+if [ "$DDEV_AVAILABLE" = true ]; then
+    ddev exec -s node-dev "cd /var/www/html/frontend && pnpm run typecheck"
+else
+    pnpm run typecheck
+fi
+
+echo ""
+echo "=== Pre-commit: unit tests ==="
+if [ "$DDEV_AVAILABLE" = true ]; then
+    ddev exec -s node-dev "cd /var/www/html/frontend && pnpm run test:unit"
+else
+    pnpm run test:unit
+fi

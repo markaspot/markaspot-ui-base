@@ -1,0 +1,23 @@
+autoInstallPeers: false
+shamefullyHoist: true
+strictPeerDependencies: false
+confirmModulesPurge: false
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+  vue-demi: true
+
+overrides:
+  open: ^10.2.0
+  undici@6: ^6.27.0
+  undici@7: ^7.28.0
+  devalue: ^5.8.1
+  fast-xml-builder: ^1.1.7
+
+peerDependencyRules:
+  allowedVersions:
+    '@nuxt/kit': '4'
+  ignoreMissing:
+    - '@nuxt/kit'

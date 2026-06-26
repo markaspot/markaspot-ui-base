@@ -2,12 +2,16 @@
 .output
 .data
 .nuxt
+.nuxt-typecheck
 .nitro
 .cache
 dist
 backups
+# Test coverage reports
+coverage
 # Node dependencies
 node_modules
+.pnpm-store
 
 # Logs
 logs
@@ -26,3 +30,25 @@ logs
 #Tests
 test-results
 playwright-report
+/node-compile-cache
+
+# Auto-generated merged i18n locale files
+/i18n/locales/merged/
+
+# Version tracking file (used by changelog script)
+.version
+
+# Dev artifacts / LLM context dumps
+app.txt
+dir2prompt.py
+.smoke-shots/
+/--no-fork/
+.swarm/
+.tmp/
+# Local scratch docs stay ignored, but versioned dev docs under
+# docs/development/ (e.g. the TypeScript migration plan referenced by
+# tsconfig.json) are tracked.
+docs/*
+!docs/development/
+docs/development/*
+!docs/development/*.md

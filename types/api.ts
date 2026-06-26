@@ -1,4 +1,4 @@
-
+// types/api.ts
 
 export interface DrupalJsonApiResponse<T> {
     data: T
@@ -31,9 +31,11 @@ export interface DrupalJsonApiRelationship {
     data: {
         type: string
         id: string
+        meta?: Record<string, unknown>
     } | {
         type: string
         id: string
+        meta?: Record<string, unknown>
     }[]
     links?: {
         self?: string
@@ -49,4 +51,23 @@ export interface DrupalEntityBase {
     links?: {
         self?: string
     }
+}
+
+/**
+ * Canonical JSON:API resource shape for dashboard transforms.
+ * Aliases DrupalEntityBase so the dashboard composables share one resource
+ * type instead of redefining a local divergent interface.
+ */
+export type JsonApiResource = DrupalEntityBase;
+
+/**
+ * CSV export resource shape used by the dashboard request list pages.
+ * Hoisted here so the georeport and JSON:API list pages import one
+ * definition instead of duplicating it.
+ */
+export interface CsvJsonApiResource {
+    id: string
+    type: string
+    attributes?: Record<string, unknown>
+    relationships?: Record<string, unknown>
 }

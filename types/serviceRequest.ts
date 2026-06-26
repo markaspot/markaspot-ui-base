@@ -10,8 +10,9 @@ export interface ServiceRequestData {
         lat: number
         lng: number
     }
+    field_facility?: string
     field_feedback?: string
-    title: string 
+    title: string // Even though hidden in form, it's required by Drupal
 }
 
 export interface FeedbackData {

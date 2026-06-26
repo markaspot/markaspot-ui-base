@@ -1,0 +1,32 @@
+# Ignore dependencies
+node_modules
+.pnpm-store
+
+# Ignore Nuxt build artifacts
+.nuxt
+.output
+.nitro
+.cache
+dist
+backups
+base-repo
+
+# Ignore logs
+logs
+*.log
+
+# Ignore OS and IDE files
+.DS_Store
+.claude
+.fleet
+.idea
+.vscode
+
+# Ignore local environment files
+.env
+.env.*
+
+# Ignore test outputs and tests
+test-results
+playwright-report
+tests

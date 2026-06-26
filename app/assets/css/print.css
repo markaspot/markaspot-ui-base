@@ -1,0 +1,47 @@
+/* Print Stylesheet
+   Global print rules shared by all views. The actual print layout is
+   rendered by the ReportPrintSheet component (Teleported to <body> so it
+   escapes any parent modal/overflow constraints).
+
+   Per-page hide-by-default patterns (e.g. `print:hidden` on dashboard
+   containers) are still honoured. The `body > *:not([data-print-sheet])`
+   rule in ReportPrintSheet's unscoped block makes sure only the teleported
+   sheet is visible when a print view is mounted; every other body sibling
+   (Nuxt app root, UModal overlays, toast teleports) is suppressed. */
+
+@media print {
+  /* Generic opt-out attribute for any element that must never print. */
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* Force light color scheme for the printed page. */
+  html {
+    color-scheme: light !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    color-scheme: light !important;
+  }
+
+  html.dark,
+  html.dark body {
+    background: white !important;
+    color: #111 !important;
+  }
+
+  /* Images should not split across pages. */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Page box defaults (the ReportPrintSheet component overrides with its own
+     @page A4 block when rendered; this is the global fallback). */
+  @page {
+    margin: 1.5cm;
+  }
+}

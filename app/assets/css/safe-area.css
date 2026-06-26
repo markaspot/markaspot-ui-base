@@ -1,0 +1,38 @@
+/* iOS Safe Area Utilities */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  /* Offsets */
+  --safe-area-top-offset: 0px; /* for map controls & top-fixed UIs */
+  --safe-modal-offset: 0px;    /* extra space for modal/drawer headers */
+}
+
+/* Safe area utilities - base padding for all devices */
+.pt-safe {
+  padding-top: 1rem !important;
+}
+
+/* On mobile devices only (<640px), add safe area to the base padding */
+@media (max-width: 640px) {
+  .pt-safe {
+    padding-top: max(1.5rem, calc(1.5rem + var(--safe-area-inset-top, 0px) + var(--safe-modal-offset, 0px))) !important;
+  }
+}
+
+.pb-safe {
+  padding-bottom: 1rem !important;
+}
+
+/* On mobile devices only (<640px), add safe area to the base padding */
+@media (max-width: 640px) {
+  .pb-safe {
+    padding-bottom: max(1rem, calc(1rem + var(--safe-area-inset-bottom, 0px))) !important;
+  }
+}
+
+/* Position helpers for fixed elements (e.g., map controls) */
+.safe-area-top {
+  top: calc(var(--safe-area-inset-top, 0px) + 2.25rem);
+}

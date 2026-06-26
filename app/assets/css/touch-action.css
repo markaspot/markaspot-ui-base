@@ -1,0 +1,107 @@
+/* 
+ * Touch action controls for preventing unwanted zooming
+ * and providing better touch experience for all contexts (both PWA and browser)
+ */
+
+/* Global prevention for all contexts */
+body {
+  touch-action: manipulation;
+}
+
+/* Prevent double-tap zoom on common interactive elements */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+.interactive {
+  touch-action: manipulation;
+}
+
+/* For interactive map areas where we might want pan but not zoom */
+.map-container {
+  touch-action: pan-x pan-y;
+}
+
+/* Additional overrides for touch-heavy sections */
+.touch-sensitive {
+  touch-action: manipulation;
+}
+
+/* For the entire app in standalone PWA mode */
+@media (display-mode: standalone) {
+  html, 
+  body {
+    touch-action: pan-x pan-y;
+  }
+}
+
+/* Specific adjustment for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  html {
+    /* Disable iOS-specific overscroll bounce effect */
+    -webkit-overflow-scrolling: auto;
+    /* Additional iOS Safari zoom prevention */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  /* Additional iOS input zoom prevention */
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Force minimum font size for all inputs on iOS to prevent zoom */
+  input, textarea, select {
+    font-size: max(16px, 1rem) !important;
+  }
+}
+
+/* 
+ * Comprehensive iOS Safari zoom prevention for all form inputs
+ * iOS Safari zooms when input font-size is less than 16px
+ * This applies globally across all client themes
+ */
+input[type="text"], 
+input[type="email"], 
+input[type="tel"], 
+input[type="url"], 
+input[type="password"], 
+input[type="number"], 
+input[type="search"], 
+input[type="date"], 
+input[type="time"], 
+input[type="datetime-local"], 
+textarea, 
+select {
+    font-size: 16px !important;
+}
+
+/* 
+ * Nuclear option: Maximum specificity to override ANY framework styles
+ * This ensures 16px font-size on ALL form inputs to prevent iOS zoom
+ */
+html body * input,
+html body * textarea,
+html body * select,
+* input,
+* textarea,
+* select {
+    font-size: 16px !important;
+    font-size: max(16px, 1rem) !important;
+}
+
+/* Target framework components specifically */
+.ui-input input,
+.ui-input-wrapper input,
+.ui-textarea textarea,
+.ui-select select,
+[data-ui="input"] input,
+[data-ui="textarea"] textarea,
+[data-ui="select"] select,
+div input,
+form input,
+[class*="input"] input {
+    font-size: 16px !important;
+}

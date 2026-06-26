@@ -1,0 +1,41 @@
+{
+  // Strict-mode ISLAND (see docs/development/TYPESCRIPT.md).
+  //
+  // The root tsconfig.json runs relaxed (strict:false, strictNullChecks:false)
+  // for the whole app during the gradual migration. This standalone config
+  // turns strictNullChecks back ON for a curated, already-null-safe subset and
+  // is wired into CI as `typecheck:strict`. It is the first ratchet tooth: the
+  // include list only ever grows, never shrinks, so null-safety can never
+  // regress on the files it covers.
+  //
+  // Standalone (does NOT extend the Nuxt-generated tsconfig) so it needs no
+  // `.nuxt` prepare step and stays fast and deterministic.
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": false,
+    "strictNullChecks": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./app/*"],
+      "#shared/*": ["./shared/*"]
+    }
+  },
+  "include": [
+    "types/**/*.ts",
+    "shared/**/*.ts"
+  ],
+  "exclude": [
+    // Reaches into ~/plugins/geocoding via an alias import; pulling that whole
+    // subtree into the island would defeat its isolation. Add it back once the
+    // geocoding plugin types are themselves null-safe.
+    "types/geocoding.d.ts"
+  ]
+}

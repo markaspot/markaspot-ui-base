@@ -1,9 +1,24 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
-  "types": [
-    "@nuxt/types",
-    "@nuxtjs/i18n",
-    "vue-i18n"
-  ]
+  "compilerOptions": {
+    // Relaxed mode for gradual TypeScript migration
+    // See: docs/development/TYPESCRIPT.md for migration plan
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+
+    // Relaxed checks for existing codebase
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+
+    // Performance & compatibility
+    "skipLibCheck": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+  }
 }

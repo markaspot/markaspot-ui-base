@@ -1,0 +1,113 @@
+/*
+  Default Client Brand Colors
+  - Tailwind is already imported in main.css
+  - This file extends the theme with brand-specific colors
+  - Do NOT use @theme here - it blocks Nuxt UI's color palettes!
+*/
+
+/* Brand colors extend Tailwind's theme */
+:root {
+  /* Brand: CELLO (mapped to Tailwind blue by default) */
+  --color-cello-50: #eff6ff;
+  --color-cello-100: #dbeafe;
+  --color-cello-200: #bfdbfe;
+  --color-cello-300: #93c5fd;
+  --color-cello-400: #60a5fa;
+  --color-cello-500: #3b82f6;
+  --color-cello-600: #2563eb;
+  --color-cello-700: #1d4ed8;
+  --color-cello-800: #1e40af;
+  --color-cello-900: #1e3a8a;
+  --color-cello-950: #172554;
+
+  /* Brand: MAGENTA (mapped to Tailwind fuchsia by default) */
+  --color-magenta-50: #fdf4ff;
+  --color-magenta-100: #fae8ff;
+  --color-magenta-200: #f5d0fe;
+  --color-magenta-300: #f0abfc;
+  --color-magenta-400: #e879f9;
+  --color-magenta-500: #d946ef;
+  --color-magenta-600: #c026d3;
+  --color-magenta-700: #a21caf;
+  --color-magenta-800: #86198f;
+  --color-magenta-900: #701a75;
+  --color-magenta-950: #4a044e;
+
+  /* Generic SECONDARY palette used by custom classes in app.config.ts */
+  --color-secondary-50: var(--color-magenta-50);
+  --color-secondary-100: var(--color-magenta-100);
+  --color-secondary-200: var(--color-magenta-200);
+  --color-secondary-300: var(--color-magenta-300);
+  --color-secondary-400: var(--color-magenta-400);
+  --color-secondary-500: var(--color-magenta-500);
+  --color-secondary-600: var(--color-magenta-600);
+  --color-secondary-700: var(--color-magenta-700);
+  --color-secondary-800: var(--color-magenta-800);
+  --color-secondary-900: var(--color-magenta-900);
+  --color-secondary-950: var(--color-magenta-950);
+
+  /* TEST: Temporarily change primary to violet to test theming system */
+  /* Map BLUE -> CELLO */
+  --color-primary-50: var(--color-cello-50);
+  --color-primary-100: var(--color-cello-100);
+  --color-primary-200: var(--color-cello-200);
+  --color-primary-300: var(--color-cello-300);
+  --color-primary-400: var(--color-cello-400);
+  --color-primary-500: var(--color-cello-500);
+  --color-primary-600: var(--color-cello-600);
+  --color-primary-700: var(--color-cello-700);
+  --color-primary-800: var(--color-cello-800);
+  --color-primary-900: var(--color-cello-900);
+  --color-primary-950: var(--color-cello-950);
+
+  /* Map Nuxt UI primary variables to Tailwind tokens for consistency
+     Ensures teleported UI (modals, popovers) inherit correct brand colors */
+  --ui-color-primary-50: var(--color-primary-50);
+  --ui-color-primary-100: var(--color-primary-100);
+  --ui-color-primary-200: var(--color-primary-200);
+  --ui-color-primary-300: var(--color-primary-300);
+  --ui-color-primary-400: var(--color-primary-400);
+  --ui-color-primary-500: var(--color-primary-500);
+  --ui-color-primary-600: var(--color-primary-600);
+  --ui-color-primary-700: var(--color-primary-700);
+  --ui-color-primary-800: var(--color-primary-800);
+  --ui-color-primary-900: var(--color-primary-900);
+  --ui-color-primary-950: var(--color-primary-950);
+  --ui-primary: var(--color-primary-600);
+
+  /* Custom Neutral: BLACK FOREST - Very dark green-tinted gray for deep forest vibes */
+  --color-forest-50: #f0f4f3;
+  --color-forest-100: #d8e3df;
+  --color-forest-200: #b0c5bc;
+  --color-forest-300: #82a094;
+  --color-forest-400: #5a7a6d;
+  --color-forest-500: #425951;
+  --color-forest-600: #334641;
+  --color-forest-700: #273632;
+  --color-forest-800: #1a2521;
+  --color-forest-900: #111a17;
+  --color-forest-950: #080d0b;
+
+  /* Custom Neutral: CRIMSON - Dark red-tinted gray for wine/blood red vibes */
+  --color-crimson-50: #f4f0f0;
+  --color-crimson-100: #e3d8d8;
+  --color-crimson-200: #c5b0b0;
+  --color-crimson-300: #a08282;
+  --color-crimson-400: #7a5a5a;
+  --color-crimson-500: #594242;
+  --color-crimson-600: #463333;
+  --color-crimson-700: #362727;
+  --color-crimson-800: #251a1a;
+  --color-crimson-900: #1a1111;
+  --color-crimson-950: #0d0808;
+
+}
+
+/*
+  How to customize per client:
+  - Replace the CELLO hex values with your brand primary scale
+  - Replace the MAGENTA hex values with your brand secondary scale
+  - Change dark mode tone in config/clients/{client}.ts: colors.gray: 'slate' | 'zinc' | 'stone'
+  - Nuxt UI automatically handles dark mode color palettes
+  - Custom neutrals: Add full 50-950 palette (like forest above) for themed neutrals
+*/
